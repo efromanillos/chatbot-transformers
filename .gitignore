@@ -1,0 +1,30 @@
+# --- Entorno virtual ---
+venv/
+.env/
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# --- Archivos temporales ---
+*.tmp
+*.log
+*.cache
+
+# --- Archivos de sistema ---
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# --- VS Code ---
+.vscode/
+
+# --- Hugging Face / Transformers ---
+.cache/
+huggingface/
+
+#Carpetas con extras
+Docs/
