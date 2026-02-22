@@ -27,7 +27,7 @@ def cargar_modelo() -> SentenceTransformer:
 # se especifica la salida tipo lista explicitamente por claridad
 #===============================================================
 
-def dividir_en_chunks(texto: str, tamaño: int = 300) -> list[str]:
+def dividir_en_chunks(texto: str, tamaño: int = 120) -> list[str]:
     """Divide el texto en fragmentos de 'tamaño' palabras."""
     palabras = texto.split()
    
@@ -55,15 +55,16 @@ def generar_embeddings(chunks: list[str], modelo: SentenceTransformer) -> np.nda
  #4. Encapsular todo en una función orquestadora
  #==============================================
 
-def preparar_embeddings(texto: str) -> tuple[list[str], np.ndarray]:
+def preparar_embeddings(texto: str) -> tuple[list[str], np.ndarray, SentenceTransformer]:
     """
     Divide el texto en chunks, carga el modelo y genera embeddings.
-    Devuelve: (lista_chunks, matriz_embeddings)
+    Devuelve: (lista_chunks, matriz_embeddings, modelo)
     """
 
     try:
         print("Dividiendo texto en chunks...")
         chunks = dividir_en_chunks(texto)
+        print('\nCantidad de chunks: ', len(chunks))
 
         print("Cargando modelo de embeddings...")
         modelo = cargar_modelo()
@@ -72,11 +73,11 @@ def preparar_embeddings(texto: str) -> tuple[list[str], np.ndarray]:
         embeddings = generar_embeddings(chunks, modelo)
 
         print("Embeddings generados correctamente.")
-        return chunks, embeddings
+        return chunks, embeddings, modelo
     
     except Exception as e:
         print(f'Error al preparar embeddings: {e}')
-        return [], np.array([])
+        return [], np.array([]), None
 
 
 

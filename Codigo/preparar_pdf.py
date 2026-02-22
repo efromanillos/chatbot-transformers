@@ -43,8 +43,10 @@ def limpiar_texto(texto: str) -> str:
 def preparar_texto(ruta_pdf: str) -> str:
     """Carga y limpia el PDF"""
     texto = cargar_texto(ruta_pdf)
-    texto_limpiio = limpiar_texto(texto)
-    return texto_limpiio
+
+    texto_limpio = limpiar_texto(texto)
+
+    return texto_limpio
 
 
 if __name__ == '__main__':

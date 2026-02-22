@@ -17,7 +17,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 # con los 3 chunks más similares
 #=================================================================
 
-def buscar_similares(pregunta: str, chunks: list[str], embeddings: np.ndarray, modelo: SentenceTransformer, k: int = 3) -> list[tuple[str,float]]:
+def buscar_similares(pregunta: str, chunks: list[str], embeddings: np.ndarray, modelo: SentenceTransformer, k: int = 3, umbral: float = 0.55) -> list[tuple[str,float]]:
     """Devuelve los k chunks más similares a la pregunt en una lista de tuplas (chunk, similitudes)."""
     
     # Embedding de la pregunta
@@ -32,6 +32,13 @@ def buscar_similares(pregunta: str, chunks: list[str], embeddings: np.ndarray, m
     # los 3 índices con mayor similitud.
 
     indices = np.argsort(similitudes)[::-1][:k]
+
+    # Mejor similitud
+    mejor_similitud = similitudes[indices[0]]
+
+    # Si no alcanza el umbral, no devolvemos nada
+    if mejor_similitud < umbral:
+        return []
 
     # Devolver lista de (chunk, similitud)
     resultado = []
@@ -56,8 +63,8 @@ def generar_respuesta(pregunta: str, contexto: list[str]) -> str:
     if not contexto:
         return 'No he encontrado información relevante en el documento.'
 
-    # Tomamos el chunk más relevante
-    mejor_chunk = contexto[0]
+    # Tomamos el chunk y simmilitud más relevante
+    mejor_chunk, mejor_similitud = contexto[0]
 
     # Respuesta simple
     respuesta = (
@@ -77,13 +84,46 @@ def generar_respuesta(pregunta: str, contexto: list[str]) -> str:
 
 
 def responder(pregunta: str, chunks: list[str], embeddings: np.ndarray, modelo: SentenceTransformer) -> str:
-    """Orquesta todo el proceso"""
-    
-    similares = buscar_similares(pregunta, chunks, embeddings, modelo)
-    contexto = []
-    for chunk, _ in similares:
-        #contexto contiene los 3 chunks más similares
-        contexto.append(chunk)
+    """
+    Orquesta el proceso completo:
+    1. Busca los chunks más similares
+    2. Genera una respuesta breve y relevante
+    """
 
-    respuesta = generar_respuesta(pregunta, contexto)
+    # 1. Recuperar los chunks más parecidos
+    
+    chunks_similares = buscar_similares(pregunta, chunks, embeddings, modelo, k=3, umbral = 0.55)
+
+    # 2. Si no hay nada relevante, fallback response
+    if not chunks_similares:
+        return "No he encontrado información relevante sobre eso en el PDF."
+
+    # 3. Generar respuesta breve basada en el mejor chunk
+    respuesta = generar_respuesta(pregunta, chunks_similares)
+
+
+    respuesta = generar_respuesta(pregunta, chunks_similares)
     return respuesta
+
+
+#============================================
+#chatear() 
+#función para generar el bucle conversacional
+#============================================
+def chatear(chunks, embeddings, modelo):
+    print("\n=== MODO CHAT ===\n")
+
+    # Mensaje de bienvenida del chatbot
+    print("<Chatbot>: Hola, soy tu asistente. Pregúntame lo que quieras sobre el PDF.\n")
+
+    
+    while True:
+        pregunta = input("<Usuario>: ")
+
+        if pregunta.lower() in ("salir", "exit", "quit"):
+            print("\nSaliendo del chat...")
+            break
+
+        respuesta = responder(pregunta, chunks, embeddings, modelo)
+
+        print(f"<Chatbot>: {respuesta}\n")
