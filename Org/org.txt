@@ -70,9 +70,48 @@ Estructura del programa
                  
 
  
+============
+NOTAS APARTE
+============
+
+Diagrama conceptual del espacio semántico
+-----------------------------------------
+
+                   (Espacio semántico del modelo)
+┌──────────────────────────────────────────────────────────────┐
+│                                                              │
+│      ● Chunk A (Turing)                                      │
+│                                                              │
+│                        ● Chunk B (Zuse)                      │
+│                                                              │
+│      ● Chunk C (Shannon)                                     │
+│                                                              │
+│                                ● Chunk D (ELIZA)             │
+│                                                              │
+│                 ● Chunk E (Deep Blue)                        │
+│                                                              │
+│                                                              │
+│                     ★ Embedding de la pregunta               │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
 
 
+BUEN CHUNKING (por frases)
+---------------------------------
+● Turing
+● Zuse
+● Shannon
+● ELIZA
+● Deep Blue
+★ Pregunta
+→ Distancias claras → RAG preciso
 
 
-
+MAL CHUNKING (por palabras o demasiado grande)
+---------------------------------
+● Mezcla Turing+Zuse+Shannon
+● Mezcla ELIZA+DeepBlue
+● Chunk cortado sin sentido
+★ Pregunta
+→ Distancias confusas → RAG falla
 

@@ -20,8 +20,14 @@ from sklearn.metrics.pairwise import cosine_similarity
 def buscar_similares(pregunta: str, chunks: list[str], embeddings: np.ndarray, modelo: SentenceTransformer, k: int = 3, umbral: float = 0.55) -> list[tuple[str,float]]:
     """Devuelve los k chunks más similares a la pregunt en una lista de tuplas (chunk, similitudes)."""
     
+    
+    # Normalizar y reforzar la pregunta para mejorar la precisión, añade contexto a la pregunta
+    pregunta_normalizada = pregunta.lower().strip().replace('?', '')
+    pregunta_reforzada = f'Información sobre: {pregunta_normalizada}'
+    
+    
     # Embedding de la pregunta
-    emb_pregunta = modelo.encode([pregunta])
+    emb_pregunta = modelo.encode([pregunta_reforzada])
 
     # Similaridad coseno
     similitudes = cosine_similarity(emb_pregunta, embeddings)[0]
@@ -92,7 +98,7 @@ def responder(pregunta: str, chunks: list[str], embeddings: np.ndarray, modelo: 
 
     # 1. Recuperar los chunks más parecidos
     
-    chunks_similares = buscar_similares(pregunta, chunks, embeddings, modelo, k=3, umbral = 0.55)
+    chunks_similares = buscar_similares(pregunta, chunks, embeddings, modelo, k=3, umbral = 0.50)
 
     # 2. Si no hay nada relevante, fallback response
     if not chunks_similares:
