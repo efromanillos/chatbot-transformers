@@ -1,0 +1,78 @@
+======================================
+Actividad 2: Chatbot con Transformers
+Asignatura: Modelos de IA
+Autor: Enrique Fernández Romanillos
+======================================
+
+Descripción
+-----------
+Implementar un chatbot que mejore el anterior desarrollado con PLN y spaCy, 
+esta vez utilizando modelos del ecosistema Transformers.
+
+Características principales:
+- El chatbot responde preguntas basadas en un PDF sobre Historia de la IA.
+- Convierte a embeddings tanto las preguntas del usuario como el texto del PDF.
+- Realiza búsqueda semántica mediante similitud del coseno.
+- Genera una respuesta basada en los 3 fragmentos más relevantes recuperados.
+
+Estructura del programa
+-----------------------
+
+- menu.py
+  Implementa la interfaz de usuario (ASCII) y controla el flujo de interacción.
+
+- preparar_pdf.py
+  Carga el PDF, extrae el texto y lo limpia para prepararlo para el modelo 
+  de embeddings.
+  
+  Funciones:
+    · cargar_texto()
+    · limpiar_texto()
+    · preparar_texto()
+
+- embeddings.py
+  Carga el modelo de embeddings y genera las representaciones vectoriales 
+  del documento, almacenándolas en memoria.
+  
+    1. Cargar el modelo de embeddings.
+    2. Dividir el texto en chunks -> lista de chunks
+    3. Convertir cada chunk en un embedding (usando modelo all-MiniLM-L6-v2) -> matriz_embeddings
+    4. Devolver los chunks y sus embeddings: para que en chatbot.py
+       se pueda buscar similitud con la pregunta del usr -> (lista_chunks, matriz_embeddings)
+       
+       Flujo del módulo:
+       texto_pdf → dividir_en_chunks() → lista_chunks
+       lista_chunks → generar_embeddings() → matriz_embeddings
+       → devolver (lista_chunks, matriz_embeddings)
+  
+  
+  
+  Funciones:
+    · cargar_modelo()
+    · dividir_en_chunks(texto, tamaño=300)
+    · generar_embeddings(chunks, modelo) -> convierte cada chunks en un vector
+    · preparar_embeddings(texto)
+        → función principal (orquestadora) que llama a todo lo anterior
+        → devuelve (chunks, embeddings)
+
+    
+    
+
+- chatbot.py
+  Realiza la búsqueda semántica, selecciona los fragmentos más relevantes 
+  y genera la respuesta final.
+
+- main.py
+  Módulo principal que coordina la lógica conversacional: 
+  recibe preguntas del usuario, consulta el chatbot y muestra la respuesta.
+              
+                 
+                 
+
+ 
+
+
+
+
+
+
