@@ -22,7 +22,7 @@ networkx==3.6.1
 numpy==2.4.2
 packaging==26.0
 Pygments==2.19.2
-PyPDF2==3.0.1
+PyMuPDF==1.27.1
 PyYAML==6.0.3
 regex==2026.2.19
 rich==14.3.3
