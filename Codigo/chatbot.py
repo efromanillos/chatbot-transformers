@@ -10,15 +10,16 @@
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+import historial
 
 #=================================================================
 # buscar_similares()
-# buscar imilitud entre pregunta y chunks, devulve lista de tuplas
-# con los 3 chunks más similares
+# buscar imilitud entre pregunta y segmentos, devulve lista de tuplas
+# con los 3 segmentos más similares
 #=================================================================
 
-def buscar_similares(pregunta: str, chunks: list[str], embeddings: np.ndarray, modelo: SentenceTransformer, k: int = 3, umbral: float = 0.55) -> list[tuple[str,float]]:
-    """Devuelve los k chunks más similares a la pregunt en una lista de tuplas (chunk, similitudes)."""
+def buscar_similares(pregunta: str, segmentos: list[str], embeddings: np.ndarray, modelo: SentenceTransformer, k: int = 3, umbral: float = 0.55) -> list[tuple[str,float]]:
+    """Devuelve los k segmentos más similares a la pregunt en una lista de tuplas (chunk, similitudes)."""
     
     
     # Normalizar y reforzar la pregunta para mejorar la precisión, añade contexto a la pregunta
@@ -49,7 +50,7 @@ def buscar_similares(pregunta: str, chunks: list[str], embeddings: np.ndarray, m
     # Devolver lista de (chunk, similitud)
     resultado = []
     for i in indices:
-        chunk = chunks[i]
+        chunk = segmentos[i]
         similitud = similitudes[i]
         resultado.append((chunk, similitud))
     return resultado
@@ -84,31 +85,31 @@ def generar_respuesta(pregunta: str, contexto: list[str]) -> str:
 #=====================================================
 # responder()
 # Función orquestadora:
-# Busca los 3 chunks más similares
+# Busca los 3 segmentos más similares
 # Devuelve un único chunk, el más relevante.
 #=====================================================
 
 
-def responder(pregunta: str, chunks: list[str], embeddings: np.ndarray, modelo: SentenceTransformer) -> str:
+def responder(pregunta: str, segmentos: list[str], embeddings: np.ndarray, modelo: SentenceTransformer) -> str:
     """
     Orquesta el proceso completo:
-    1. Busca los chunks más similares
+    1. Busca los segmentos más similares
     2. Genera una respuesta breve y relevante
     """
 
-    # 1. Recuperar los chunks más parecidos
+    # 1. Recuperar los segmentos más parecidos
     
-    chunks_similares = buscar_similares(pregunta, chunks, embeddings, modelo, k=3, umbral = 0.50)
+    segmentos_similares = buscar_similares(pregunta, segmentos, embeddings, modelo, k=3, umbral = 0.50)
 
     # 2. Si no hay nada relevante, fallback response
-    if not chunks_similares:
+    if not segmentos_similares:
         return "No he encontrado información relevante sobre eso en el PDF."
 
     # 3. Generar respuesta breve basada en el mejor chunk
-    respuesta = generar_respuesta(pregunta, chunks_similares)
+    respuesta = generar_respuesta(pregunta, segmentos_similares)
 
 
-    respuesta = generar_respuesta(pregunta, chunks_similares)
+    respuesta = generar_respuesta(pregunta, segmentos_similares)
     return respuesta
 
 
@@ -116,20 +117,54 @@ def responder(pregunta: str, chunks: list[str], embeddings: np.ndarray, modelo: 
 #chatear() 
 #función para generar el bucle conversacional
 #============================================
-def chatear(chunks, embeddings, modelo):
-    print("\n=== MODO CHAT ===\n")
+
+"""
+def chatear(segmentos, embeddings, modelo):
+    print('\n=== MODO CHAT ===\n')
 
     # Mensaje de bienvenida del chatbot
-    print("<Chatbot>: Hola, soy tu asistente. Pregúntame lo que quieras sobre el PDF.\n")
-
+    print('<Chatbot>: Hola, soy tu asistente. Pregúntame lo que quieras sobre el PDF.\n')
+    print('Para salir del chat escribe "salir" ó "exit" ó "quit".\n')    
     
     while True:
-        pregunta = input("<Usuario>: ")
+        pregunta = input('<Usuario>: ')
 
-        if pregunta.lower() in ("salir", "exit", "quit"):
-            print("\nSaliendo del chat...")
+        if pregunta.lower() in ('salir', 'exit', 'quit'):
+            print('\nSaliendo del chat...')
             break
 
-        respuesta = responder(pregunta, chunks, embeddings, modelo)
+        respuesta = responder(pregunta, segmentos, embeddings, modelo)
+
+        print(f"<Chatbot>: {respuesta}\n")
+
+"""
+
+def chatear(segmentos, embeddings, modelo):
+    print('\n=== MODO CHAT ===\n')
+
+    print('<Chatbot>: Hola, soy tu asistente. Pregúntame lo que quieras sobre el PDF.\n')
+    print('Para salir del chat escribe "salir" ó "exit" ó "quit".\n')
+
+    while True:
+        pregunta = input('<Usuario>: ')
+
+        if pregunta.lower() in ('salir', 'exit', 'quit'):
+            print('\nSaliendo del chat...')
+            break
+
+        # 1. Detectar si la pregunta depende del contexto
+        dependiente = historial.es_pregunta_dependiente(pregunta)
+
+        # 2. Construir la consulta adecuada
+        if dependiente:
+            consulta = historial.construir_consulta_con_contexto(pregunta)
+        else:
+            consulta = pregunta
+
+        # 3. Obtener respuesta usando la consulta contextual
+        respuesta = responder(consulta, segmentos, embeddings, modelo)
+
+        # 4. Guardar turno real (pregunta original + respuesta + si era dependiente)
+        historial.agregar_turno(pregunta, respuesta, dependiente)
 
         print(f"<Chatbot>: {respuesta}\n")

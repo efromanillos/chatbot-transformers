@@ -2,7 +2,7 @@
 #emebddings.py
 #Módulo donde: 
 # 1. Carga el modelo de embeddings
-# 2. Divide en chunks el texto
+# 2. Divide en segmentos el texto
 # 3. Genera la matriz de embeddings
 # 4. Encapsula todo en una función orquestadora preparar_emebddings()
 #====================================================================
@@ -21,7 +21,7 @@ def cargar_modelo() -> SentenceTransformer:
     return modelo
 
 #===============================================================
-# 2. Dividir texto en chunks
+# 2. Dividir texto en segmentos
 # se especifica la salida tipo lista explicitamente por claridad
 #===============================================================
 
@@ -63,26 +63,26 @@ def dividir_texto_en_frases_y_segmentos(texto: str, max_palabras: int = 80) -> l
 #==================================
 
 
-def generar_embeddings(chunks: list[str], modelo: SentenceTransformer) -> np.ndarray:
+def generar_embeddings(segmentos: list[str], modelo: SentenceTransformer) -> np.ndarray:
     """Convierte cada chunk en un embedding."""
-    embeddings = modelo.encode(chunks)
+    embeddings = modelo.encode(segmentos)
     return np.array(embeddings)
 
  
  #==============================================
- #4. Encapsular todo en una función orquestadora
+ #4. Ejecutar todo en una función orquestadora
  #==============================================
 
 def preparar_embeddings(texto: str) -> tuple[list[str], np.ndarray, SentenceTransformer]:
     """
-    Divide el texto en chunks, carga el modelo y genera embeddings.
-    Devuelve: (lista_chunks, matriz_embeddings, modelo)
+    Divide el texto en segmentos, carga el modelo y genera embeddings.
+    Devuelve: (lista_segmentos, matriz_embeddings, modelo)
     """
 
     try:
         print("Dividiendo texto en segmentos...")
         segmentos = dividir_texto_en_frases_y_segmentos(texto)
-        print('\nCantidad de chunks: ', len(segmentos))
+        print('\nCantidad de segmentos: ', len(segmentos))
         input('Pulsa enter para continuar')
 
         print("Cargando modelo de embeddings...")
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     texto_prueba = "Este es un texto de prueba para verificar el módulo de embeddings. " * 50
     segmentos, emb, mod= preparar_embeddings(texto_prueba)
 
-    print(f"Chunks generados: {len(segmentos)}")
+    print(f"segmentos generados: {len(segmentos)}")
     print(f"Dimensión de un embedding: {emb[0].shape}")
     for i, chunk in enumerate(segmentos):
         print(f"Chunk {i}: {chunk[:80]}...")

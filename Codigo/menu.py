@@ -10,9 +10,6 @@ from embeddings import preparar_embeddings, cargar_modelo
 from chatbot import chatear
 
 
-
-
-
 #=================
 # menu_principal()
 #=================
@@ -24,11 +21,11 @@ def menu_principal():
     # 1. Declarar la ruta al pdf
     ruta_pdf = '../Textos/Rodriguez-Cronologia-de-la-Inteligencia-Artificial.pdf'
    
-    # 2.Obtener lista de chunks del pdf
-    chunks = preparar_texto(ruta_pdf) 
+    # 2.Obtener lista de segmentos del pdf
+    segmentos = preparar_texto(ruta_pdf) 
 
-    # 3. Obtener chunks + embeddings + modelo
-    chunks, embeddings, modelo = preparar_embeddings(chunks)
+    # 3. Obtener segmentos + embeddings + modelo
+    segmentos, embeddings, modelo = preparar_embeddings(segmentos)
 
     # 4. Menú interactivo
 
@@ -47,7 +44,9 @@ def menu_principal():
 
             case '1':
                 print('...iniciando chatbot...')
-                chatear(chunks, embeddings, modelo)
+                #print("DEBUG modelo =", modelo)
+
+                chatear(segmentos, embeddings, modelo)
                 input("\nPulsa ENTER para continuar...")
 
             case '2': 
