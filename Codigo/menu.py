@@ -5,10 +5,10 @@
 
 
 import os
-from preparar_pdf import cargar_texto, dividir_texto_en_frases_y_segmentos
-from embeddings import preparar_embeddings, MODELO_EMBEDDINGS
-from chatbot import chatear
-from utilidades import MODELO_RESUMEN, MODELO_TTS
+from Codigo.preparar_pdf import cargar_texto, dividir_texto_en_frases_y_segmentos
+from Codigo.embeddings import preparar_embeddings, MODELO_EMBEDDINGS
+from Codigo.chatbot import chatear
+from Codigo.utilidades import MODELO_RESUMEN, MODELO_TTS
 
 
 
@@ -19,14 +19,14 @@ from utilidades import MODELO_RESUMEN, MODELO_TTS
 def menu_principal():
 
     os.system('cls')
-    print('\n|Iniciando Chatbot con Transformers|\n')
+    print('\n\033[107;30m--< Iniciando Chatbot con Transformers >-- \033[0m\n')
 
 
 
     #Carga de datos necesarios para el chatbot:
 
     # 1. Declarar la ruta al pdf
-    ruta_pdf = '../Textos/Rodriguez-Cronologia-de-la-Inteligencia-Artificial.pdf'
+    ruta_pdf = 'Textos/Rodriguez-Cronologia-de-la-Inteligencia-Artificial.pdf'
 
     # 2. Cargar pdf
     texto = cargar_texto(ruta_pdf)
@@ -41,25 +41,26 @@ def menu_principal():
 
     # print(f"· Modelo de resumen: {resumen_pipeline.model.name_or_path}")
 
-    print("\033[92m------------------< Información del sistema >-----------------\033[0m")
+    
+
+    print("\033[107;30m------------------< Información del sistema >-----------------\033[0m\n")
     print(f"· Cantidad de segmentos: {len(segmentos)}")
     print(f"· Modelo de embeddings: {MODELO_EMBEDDINGS}")
     print(f"· Modelo de resumen: {MODELO_RESUMEN}")
     print(f"· Modelo de text-to-speech: {MODELO_TTS}")
-    print("\033[92m--------------------------------------------------------------\033[0m")
+    print("\n\033[107;30m--------------------------------------------------------------\033[0m")
     
-    input('Pulsa ENTER para continuar')
+    input('Pulsa ENTER para continuar...')
 
     # 4. Menú interactivo
 
     while True:
 
         os.system('cls')
-
-        print('========= ChatBot con Transformers ==========')
+        print('\033[107;30m--------< ChatBot con Transformers >---------\033[0m\n')
         print('1. Chatear')
         print('2. Salir')
-        print('=============================================')
+        print('\n\033[107;30m----------------------------------------------\033[0m')
 
         opc = input('Seleccina una opción: ')
 

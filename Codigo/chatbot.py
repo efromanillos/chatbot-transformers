@@ -10,9 +10,9 @@
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-import historial
+import Codigo.historial as historial
 
-from utilidades import generar_despedida, resumir_pdf, reproducir_voz, cargar_tts_pipeline, cargar_resumen_pipeline
+from Codigo.utilidades import generar_despedida, resumir_pdf, reproducir_voz, cargar_tts_pipeline, cargar_resumen_pipeline
 
 despedidas = [
     "Hasta otra.",
@@ -81,13 +81,13 @@ def generar_respuesta(pregunta: str, contexto: list[str]) -> str:
     if not contexto:
         return 'No he encontrado información relevante en el documento.'
 
-    # Tomamos el chunk y simmilitud más relevante
-    mejor_chunk, mejor_similitud = contexto[0]
+    # Tomamos el segmento y simmilitud más relevante
+    mejor_segmento, mejor_similitud = contexto[0]
 
     # Respuesta simple
     respuesta = (
         'He encontrado la siguiente información relevante en el documento:\n\n'
-        f'{mejor_chunk}\n\n'
+        f'{mejor_segmento}\n\n'
         '---------------------------------------------------------------------'
     )
 
@@ -122,6 +122,19 @@ def responder(pregunta: str, segmentos: list[str], embeddings: np.ndarray, model
 
     return respuesta
 
+#==================
+#mostrar_comandos() 
+#==================
+def mostrar_comandos():
+    #print("\n\033[45m/voz   /resumen   /salir\033[0m\n")
+    #print("\033[42m  COMANDOS:  /voz   /resumen   /salir  \033[0m")
+    #print("\033[44m| COMANDOS |  /voz   /resumen   /salir\033[0m")
+    print('\033[107;30m COMANDOS →  /voz   /resumen   /salir  \033[0m\n')
+    #print('\033[100;97m COMANDOS → /voz /resumen /salir \033[0m')
+
+
+
+
 
 #============================================
 #chatear() 
@@ -131,16 +144,17 @@ def responder(pregunta: str, segmentos: list[str], embeddings: np.ndarray, model
 
 def chatear(segmentos, embeddings, modelo):
 
-    print('\n=== MODO CHAT ===\n')
-    print('<Chatbot>: Hola, soy tu asistente. Pregúntame lo que quieras sobre el PDF.\n')
-    print('· Para realizar un resumen del texto escribe:\033[92m/resumen\033[0m')
-    print('· Para que el chatbot lea la respuesta en voz alta:\033[92m/voz\033[0m')
-    print('· Para salir del chat escribe:\033[92m/salir\033[0m\n')
+    print('\n === MODO CHAT ===\n')
+    print('\033[92m <Chatbot>:\033[0m Hola, soy tu asistente. Pregúntame lo que quieras sobre el PDF. \n')
+    print(' · Para realizar un resumen del texto escribe:\033[107;30m/resumen\033[0m')
+    print(' · Para que el chatbot lea la respuesta en voz alta:\033[107;30m/voz\033[0m')
+    print(' · Para salir del chat escribe:\033[107;30m/salir\033[0m\n')
 
     ultima_respuesta = None
     
     while True:
-        pregunta = input('\033[91m<Usuario>: \033[0m')
+        
+        pregunta = input('\033[91m <Usuario>: \033[0m')
 
         
         comando = pregunta.lower().strip()
@@ -149,23 +163,24 @@ def chatear(segmentos, embeddings, modelo):
 
             case '/salir':
                 despedida = generar_despedida()
-                print(f'\n\033[92m<Chatbot>:\033[0m {despedida}')
-                print("\nSaliendo del chat...")
+                print(f'\n\033[92m <Chatbot>: \033[0m {despedida}')
+                print("\n Saliendo del chat...")
                 break
 
             case '/resumen':
                 texto_completo = " ".join(segmentos)
                 resumen_pipeline = cargar_resumen_pipeline()
                 resumen = resumir_pdf(texto_completo, resumen_pipeline)
-                print(f'\n\033[92m<Chatbot>:\033[0mAquí tienes un resumen del documento:\n\n{resumen}\n')
+                print(f'\n\033[92m <Chatbot>: \033[0mAquí tienes un resumen del documento:\n\n{resumen}\n')
                 ultima_respuesta = resumen
+                mostrar_comandos()
                 continue
 
             case '/voz':
                 if ultima_respuesta is None:
-                    print('\n\033[92m<Chatbot>:\033[0mNo tengo ninguna respuesta previa para convertir a voz.\n')
+                    print('\n\033[92m <Chatbot>: \033[0mNo tengo ninguna respuesta previa para convertir a voz.\n')
                 else:
-                    print('\n\033[92m<Chatbot>:\033[0mGenerando voz en español...\n')
+                    print('\n\033[92m <Chatbot>: \033[0mGenerando voz en español...\n')
                     tts_pipeline = cargar_tts_pipeline()
                     reproducir_voz(ultima_respuesta, tts_pipeline)
                 continue
@@ -189,5 +204,6 @@ def chatear(segmentos, embeddings, modelo):
         # 4. Guardar turno real (pregunta original + respuesta + si era dependiente)
         historial.agregar_turno(pregunta, respuesta, dependiente)
 
-        print(f"\033[92m<Chatbot>:\033[0m{respuesta}\n")
+        print(f'\n\033[92m <Chatbot>: \033[0m{respuesta}\n')
+        mostrar_comandos()
         ultima_respuesta = respuesta

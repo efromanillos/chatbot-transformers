@@ -1,0 +1,11 @@
+#===================
+#MODULO:
+#main.py
+#Entrada el programa
+#===================
+
+from Codigo.menu import menu_principal
+
+if __name__ == '__main__':
+
+    menu_principal()

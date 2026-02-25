@@ -67,12 +67,12 @@ def es_pregunta_dependiente(pregunta: str) -> bool:
     Detecta si la pregunta depende del contexto anterior.
     """
     dependencias = [
-        "y ", "también", "además", "entonces",
-        "él", "ella", "eso", "esa", "ese",
-        "en qué año", "cuándo fue", "dónde fue",
-        "qué hizo", "qué pasó", "y luego", "y después",
-        "quién la", "quién lo", "quién fue", "en qué consiste",
-        "de qué"
+        'y', 'también', 'además', 'entonces',
+        'él', 'ella', 'eso', 'esa', 'se',
+        'en qué año', 'cuándo fue', 'dónde fue',
+        'qué hizo', 'qué pasó', 'y luego', 'y después',
+        'quién la', 'quién lo', 'quién fue', 'en qué consiste',
+        'de qué'
     ]
 
     p = pregunta.lower()
