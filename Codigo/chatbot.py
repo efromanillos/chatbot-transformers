@@ -12,7 +12,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import historial
 
-from utilidades import generar_despedida, resumir_pdf
+from utilidades import generar_despedida, resumir_pdf, reproducir_voz
 
 despedidas = [
     "Hasta otra.",
@@ -130,29 +130,47 @@ def responder(pregunta: str, segmentos: list[str], embeddings: np.ndarray, model
 
 
 def chatear(segmentos, embeddings, modelo):
+
     print('\n=== MODO CHAT ===\n')
-
     print('<Chatbot>: Hola, soy tu asistente. Pregúntame lo que quieras sobre el PDF.\n')
-    print('· Para realizar un resumen escribe: /resumen')
-    print('· Para salir del chat escribe "salir" ó "exit" ó "quit".\n')
+    print('· Para realizar un resumen del texto escribe:\033[92m/resumen\033[0m')
+    print('· Para que el chatbot lea la respuesta en voz alta:\033[92m/voz\033[0m')
+    print('· Para salir del chat escribe:\033[92m/salir\033[0m\n')
 
+    ultima_respuesta = None
+    
     while True:
-        pregunta = input('<Usuario>: ')
+        pregunta = input('\033[91m<Usuario>: \033[0m')
 
         
-        #Comandos para salir del chat
-        if pregunta.lower() in ('salir', 'exit', 'quit'):
-            despedida = generar_despedida()
-            print(f"\n<Chatbot>: {despedida}")
-            print('\nSaliendo del chat...')
-            break
+        comando = pregunta.lower().strip()
 
-        # Comandos para resumir el pdf
-        if pregunta.lower().strip() == '/resumen':
-            texto_completo = " ".join(segmentos)  # Une todos los segmentos del PDF
-            resumen = resumir_pdf(texto_completo)
-            print(f"\n<Chatbot>: Aquí tienes un resumen del documento:\n\n{resumen}\n")
-            continue
+        match comando:
+
+            case '/salir':
+                despedida = generar_despedida()
+                print(f'\n\033[92m<Chatbot>:\033[0m {despedida}')
+                print("\nSaliendo del chat...")
+                break
+
+            case '/resumen':
+                texto_completo = " ".join(segmentos)
+                resumen = resumir_pdf(texto_completo)
+                print(f'\n\033[92m<Chatbot>:\033[0mAquí tienes un resumen del documento:\n\n{resumen}\n')
+                ultima_respuesta = resumen
+                continue
+
+            case '/voz':
+                if ultima_respuesta is None:
+                    print('\n\033[92m<Chatbot>:\033[0mNo tengo ninguna respuesta previa para convertir a voz.\n')
+                else:
+                    print('\n\033[92m<Chatbot>:\033[0mGenerando voz en español...\n')
+                    reproducir_voz(ultima_respuesta)
+                continue
+
+            case _:
+                # Aquí sigue el flujo normal del chatbot
+                pass
 
         # 1. Detectar si la pregunta depende del contexto
         dependiente = historial.es_pregunta_dependiente(pregunta)
@@ -169,4 +187,5 @@ def chatear(segmentos, embeddings, modelo):
         # 4. Guardar turno real (pregunta original + respuesta + si era dependiente)
         historial.agregar_turno(pregunta, respuesta, dependiente)
 
-        print(f"<Chatbot>: {respuesta}\n")
+        print(f"\033[92m<Chatbot>:\033[0m{respuesta}\n")
+        ultima_respuesta = respuesta

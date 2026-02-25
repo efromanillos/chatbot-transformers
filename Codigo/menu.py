@@ -40,11 +40,11 @@ def menu_principal():
     segmentos, embeddings, modelo = preparar_embeddings(segmentos)
 
 
-    print("\033[96m------------------< Información del sistema >-----------------\033[0m")
+    print("\033[92m------------------< Información del sistema >-----------------\033[0m")
     print(f"· Cantidad de segmentos: {len(segmentos)}")
     print(f"· Modelo de embeddings: {modelo._modules['0'].auto_model.config._name_or_path}")
     print(f"· Modelo de resumen: {resumen_pipeline.model.name_or_path}")
-    print("--------------------------------------------------------------")
+    print("\033[92m--------------------------------------------------------------\033[0m")
     
     input('Pulsa ENTER para continuar')
 
