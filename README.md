@@ -42,7 +42,8 @@ pip install transformers torch sentence-transformers PyPDF2 langdetect
 
 ## ▶️ Ejecución
 
-(Se completará más adelante cuando esté listo el `main.py`.)
+Desde el directorio raíz del programa:
+    python main.py
 
 ## Mejoras futuras
 
