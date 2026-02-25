@@ -6,9 +6,9 @@
 
 import os
 from preparar_pdf import cargar_texto, dividir_texto_en_frases_y_segmentos
-from embeddings import preparar_embeddings
+from embeddings import preparar_embeddings, MODELO_EMBEDDINGS
 from chatbot import chatear
-from utilidades import resumen_pipeline
+from utilidades import MODELO_RESUMEN, MODELO_TTS
 
 
 
@@ -39,11 +39,13 @@ def menu_principal():
     # # 4. Generar embeddings y cargar el modelo
     segmentos, embeddings, modelo = preparar_embeddings(segmentos)
 
+    # print(f"· Modelo de resumen: {resumen_pipeline.model.name_or_path}")
 
     print("\033[92m------------------< Información del sistema >-----------------\033[0m")
     print(f"· Cantidad de segmentos: {len(segmentos)}")
-    print(f"· Modelo de embeddings: {modelo._modules['0'].auto_model.config._name_or_path}")
-    print(f"· Modelo de resumen: {resumen_pipeline.model.name_or_path}")
+    print(f"· Modelo de embeddings: {MODELO_EMBEDDINGS}")
+    print(f"· Modelo de resumen: {MODELO_RESUMEN}")
+    print(f"· Modelo de text-to-speech: {MODELO_TTS}")
     print("\033[92m--------------------------------------------------------------\033[0m")
     
     input('Pulsa ENTER para continuar')

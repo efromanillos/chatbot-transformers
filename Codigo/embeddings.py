@@ -6,9 +6,15 @@
 # 3. Encapsula todo en una función orquestadora preparar_emebddings()
 #====================================================================
 
-
 from sentence_transformers import SentenceTransformer
 import numpy as np
+
+#=====================
+# MODELO DE EMBEDDINGS
+#=====================
+
+MODELO_EMBEDDINGS = 'all-MiniLM-L6-v2'
+
 
 #===============================
 # 1. Cargar modelo de embeddings
@@ -16,7 +22,7 @@ import numpy as np
 
 def cargar_modelo() -> SentenceTransformer:
     """Cargar el modelo de embeddings solo una vez"""
-    modelo = SentenceTransformer('all-MiniLM-L6-v2')
+    modelo = SentenceTransformer(MODELO_EMBEDDINGS)
     return modelo
 
 

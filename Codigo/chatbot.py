@@ -12,7 +12,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import historial
 
-from utilidades import generar_despedida, resumir_pdf, reproducir_voz
+from utilidades import generar_despedida, resumir_pdf, reproducir_voz, cargar_tts_pipeline, cargar_resumen_pipeline
 
 despedidas = [
     "Hasta otra.",
@@ -155,7 +155,8 @@ def chatear(segmentos, embeddings, modelo):
 
             case '/resumen':
                 texto_completo = " ".join(segmentos)
-                resumen = resumir_pdf(texto_completo)
+                resumen_pipeline = cargar_resumen_pipeline()
+                resumen = resumir_pdf(texto_completo, resumen_pipeline)
                 print(f'\n\033[92m<Chatbot>:\033[0mAquí tienes un resumen del documento:\n\n{resumen}\n')
                 ultima_respuesta = resumen
                 continue
@@ -165,7 +166,8 @@ def chatear(segmentos, embeddings, modelo):
                     print('\n\033[92m<Chatbot>:\033[0mNo tengo ninguna respuesta previa para convertir a voz.\n')
                 else:
                     print('\n\033[92m<Chatbot>:\033[0mGenerando voz en español...\n')
-                    reproducir_voz(ultima_respuesta)
+                    tts_pipeline = cargar_tts_pipeline()
+                    reproducir_voz(ultima_respuesta, tts_pipeline)
                 continue
 
             case _:

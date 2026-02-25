@@ -10,18 +10,39 @@ import pygame
 import numpy as np
 import random
 
+# Silenciar warnings molestos de HuggingFace, PyTorch y Python
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore")
+
+import os
+os.environ["PYTHONWARNINGS"] = "ignore"
+
+import logging
+logging.getLogger("transformers").setLevel(logging.ERROR)
+logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+
+#=======
+#MODELOS
+#=======
+
+MODELO_TTS = 'facebook/mms-tts-spa'
+MODELO_RESUMEN = "sshleifer/distilbart-cnn-12-6"
+
 
 # Cargamos el pipeline para resumir una sola vez
 # NOTA: cuando se importa este módulo (utilidades.py) desde otro archivo,
 # Python ejecuta todo el código de nivel superior (incluido este pipeline)
-resumen_pipeline = pipeline("summarization")
+def cargar_resumen_pipeline():
+    return pipeline("summarization", model=MODELO_RESUMEN)
 
 
 # Cargar el pipeline de TTS en español
-tts = pipeline(
-    "text-to-speech",
-    model="facebook/mms-tts-spa"
-)
+
+def cargar_tts_pipeline():
+    return pipeline("text-to-speech", model=MODELO_TTS)
+
 
 
 #===========================
@@ -44,12 +65,9 @@ def generar_despedida():
 #Genarar resumen del pdf
 #========================
 
-from transformers import pipeline
+def resumir_pdf(texto,  resumen_pipeline , max_length=60, min_length=30):
 
-resumen_pipeline = pipeline("summarization")
-
-def resumir_pdf(texto, max_length=60, min_length=30):
-
+  
     # 1. Dividir el texto en fragmentos de máximo 900 caracteres
     # (para que no supere los 1024 tokens de entrada)
     trozos = []
@@ -77,9 +95,11 @@ def resumir_pdf(texto, max_length=60, min_length=30):
 #de la respuesta del chatbot
 #===========================
 
-def reproducir_voz(texto):
+def reproducir_voz(texto, tts_pipeline):
 
-    audio = tts(texto)
+    
+
+    audio = tts_pipeline(texto)
     raw = audio["audio"]
     sr = audio["sampling_rate"]
 
