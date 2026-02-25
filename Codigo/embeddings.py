@@ -31,6 +31,7 @@ def cargar_modelo() -> SentenceTransformer:
 #==================================
 
 
+
 def generar_embeddings(segmentos: list[str], modelo: SentenceTransformer) -> np.ndarray:
     """Convierte cada segmento en un embedding."""
     embeddings = modelo.encode(segmentos)
