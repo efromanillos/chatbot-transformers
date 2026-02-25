@@ -12,6 +12,17 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import historial
 
+from utilidades import generar_despedida, resumir_pdf
+
+despedidas = [
+    "Hasta otra.",
+    "Que pases un buen día.",
+    "Hasta la vista.",
+    "Nos vemos pronto.",
+    "Cuídate mucho.",
+    "Fue un placer ayudarte."
+]
+
 #=================================================================
 # buscar_similares()
 # buscar imilitud entre pregunta y segmentos, devulve lista de tuplas
@@ -19,7 +30,7 @@ import historial
 #=================================================================
 
 def buscar_similares(pregunta: str, segmentos: list[str], embeddings: np.ndarray, modelo: SentenceTransformer, k: int = 3, umbral: float = 0.55) -> list[tuple[str,float]]:
-    """Devuelve los k segmentos más similares a la pregunt en una lista de tuplas (chunk, similitudes)."""
+    """Devuelve los k segmentos más similares a la pregunta en una lista de tuplas (chunk, similitudes)."""
     
     
     # Normalizar y reforzar la pregunta para mejorar la precisión, añade contexto a la pregunta
@@ -77,7 +88,7 @@ def generar_respuesta(pregunta: str, contexto: list[str]) -> str:
     respuesta = (
         'He encontrado la siguiente información relevante en el documento:\n\n'
         f'{mejor_chunk}\n\n'
-        'Esta información se ha seleccionado por similitud semántica con tu pregunta.'
+        '---------------------------------------------------------------------'
     )
 
     return respuesta
@@ -109,7 +120,6 @@ def responder(pregunta: str, segmentos: list[str], embeddings: np.ndarray, model
     respuesta = generar_respuesta(pregunta, segmentos_similares)
 
 
-    respuesta = generar_respuesta(pregunta, segmentos_similares)
     return respuesta
 
 
@@ -118,39 +128,31 @@ def responder(pregunta: str, segmentos: list[str], embeddings: np.ndarray, model
 #función para generar el bucle conversacional
 #============================================
 
-"""
-def chatear(segmentos, embeddings, modelo):
-    print('\n=== MODO CHAT ===\n')
-
-    # Mensaje de bienvenida del chatbot
-    print('<Chatbot>: Hola, soy tu asistente. Pregúntame lo que quieras sobre el PDF.\n')
-    print('Para salir del chat escribe "salir" ó "exit" ó "quit".\n')    
-    
-    while True:
-        pregunta = input('<Usuario>: ')
-
-        if pregunta.lower() in ('salir', 'exit', 'quit'):
-            print('\nSaliendo del chat...')
-            break
-
-        respuesta = responder(pregunta, segmentos, embeddings, modelo)
-
-        print(f"<Chatbot>: {respuesta}\n")
-
-"""
 
 def chatear(segmentos, embeddings, modelo):
     print('\n=== MODO CHAT ===\n')
 
     print('<Chatbot>: Hola, soy tu asistente. Pregúntame lo que quieras sobre el PDF.\n')
-    print('Para salir del chat escribe "salir" ó "exit" ó "quit".\n')
+    print('· Para realizar un resumen escribe: /resumen')
+    print('· Para salir del chat escribe "salir" ó "exit" ó "quit".\n')
 
     while True:
         pregunta = input('<Usuario>: ')
 
+        
+        #Comandos para salir del chat
         if pregunta.lower() in ('salir', 'exit', 'quit'):
+            despedida = generar_despedida()
+            print(f"\n<Chatbot>: {despedida}")
             print('\nSaliendo del chat...')
             break
+
+        # Comandos para resumir el pdf
+        if pregunta.lower().strip() == '/resumen':
+            texto_completo = " ".join(segmentos)  # Une todos los segmentos del PDF
+            resumen = resumir_pdf(texto_completo)
+            print(f"\n<Chatbot>: Aquí tienes un resumen del documento:\n\n{resumen}\n")
+            continue
 
         # 1. Detectar si la pregunta depende del contexto
         dependiente = historial.es_pregunta_dependiente(pregunta)

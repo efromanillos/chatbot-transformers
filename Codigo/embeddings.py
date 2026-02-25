@@ -1,10 +1,9 @@
 #====================================================================
 #emebddings.py
-#Módulo donde: 
+#Módulo que: 
 # 1. Carga el modelo de embeddings
-# 2. Divide en segmentos el texto
-# 3. Genera la matriz de embeddings
-# 4. Encapsula todo en una función orquestadora preparar_emebddings()
+# 2. Generar la matrziz de embeddings
+# 3. Encapsula todo en una función orquestadora preparar_emebddings()
 #====================================================================
 
 
@@ -20,78 +19,39 @@ def cargar_modelo() -> SentenceTransformer:
     modelo = SentenceTransformer('all-MiniLM-L6-v2')
     return modelo
 
-#===============================================================
-# 2. Dividir texto en segmentos
-# se especifica la salida tipo lista explicitamente por claridad
-#===============================================================
-
-def dividir_texto_en_frases_y_segmentos(texto: str, max_palabras: int = 80) -> list[str]:
-    """
-    Divide el texto en frases completas y luego agrupa esas frases
-    en segmentos (párrafos técnicos) de hasta 'max_palabras' palabras.
-    """
-    import re
-
-    # 1. Dividir en frases completas usando puntuación
-    frases = re.split(r'(?<=[.!?])\s+', texto.strip())
-
-    segmentos = []
-    segmento_actual = []
-    palabras_actual = 0
-
-    # 2. Agrupar frases hasta llegar al límite de palabras
-    for frase in frases:
-        palabras_frase = len(frase.split())
-
-        if palabras_actual + palabras_frase > max_palabras:
-            if segmento_actual:
-                segmentos.append(" ".join(segmento_actual))
-            segmento_actual = [frase]
-            palabras_actual = palabras_frase
-        else:
-            segmento_actual.append(frase)
-            palabras_actual += palabras_frase
-
-    # 3. Añadir el último segmento si quedó algo
-    if segmento_actual:
-        segmentos.append(" ".join(segmento_actual))
-
-    return segmentos
 
 #==================================
-# 3. Genera la matriz de embeddings
+# 2. Genera la matriz de embeddings
 #==================================
 
 
 def generar_embeddings(segmentos: list[str], modelo: SentenceTransformer) -> np.ndarray:
-    """Convierte cada chunk en un embedding."""
+    """Convierte cada segmento en un embedding."""
     embeddings = modelo.encode(segmentos)
     return np.array(embeddings)
 
  
  #==============================================
- #4. Ejecutar todo en una función orquestadora
+ #3. Ejecutar todo en una función orquestadora
  #==============================================
 
-def preparar_embeddings(texto: str) -> tuple[list[str], np.ndarray, SentenceTransformer]:
+def preparar_embeddings(segmentos: list[str]) -> tuple[list[str], np.ndarray, SentenceTransformer]:
     """
-    Divide el texto en segmentos, carga el modelo y genera embeddings.
+    Carga el modelo y genera embeddings.
     Devuelve: (lista_segmentos, matriz_embeddings, modelo)
     """
 
     try:
-        print("Dividiendo texto en segmentos...")
-        segmentos = dividir_texto_en_frases_y_segmentos(texto)
-        print('\nCantidad de segmentos: ', len(segmentos))
-        input('Pulsa enter para continuar')
-
-        print("Cargando modelo de embeddings...")
+        
+        print("Cargando modelo de embeddings...\n")
         modelo = cargar_modelo()
+        
 
-        print("Generando embeddings...")
+        print("\nGenerando embeddings...\n")
         embeddings = generar_embeddings(segmentos, modelo)
 
-        print("Embeddings generados correctamente.")
+        print("Embeddings generados correctamente.\n")
+        
         return segmentos, embeddings, modelo
     
     except Exception as e:

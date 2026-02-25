@@ -65,14 +65,14 @@ def construir_consulta_con_contexto(pregunta: str) -> str:
 def es_pregunta_dependiente(pregunta: str) -> bool:
     """
     Detecta si la pregunta depende del contexto anterior.
-    SIN list comprehension.
     """
     dependencias = [
         "y ", "también", "además", "entonces",
         "él", "ella", "eso", "esa", "ese",
         "en qué año", "cuándo fue", "dónde fue",
         "qué hizo", "qué pasó", "y luego", "y después",
-        "quién la", "quién lo", "quién fue", "en qué consiste"
+        "quién la", "quién lo", "quién fue", "en qué consiste",
+        "de qué"
     ]
 
     p = pregunta.lower()
