@@ -155,8 +155,6 @@ def chatear(segmentos, embeddings, modelo):
     while True:
         
         pregunta = input('\033[91m <Usuario>: \033[0m')
-
-        
         comando = pregunta.lower().strip()
 
         match comando:

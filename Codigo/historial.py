@@ -29,7 +29,7 @@ def agregar_turno(pregunta: str, respuesta: str, dependiente: bool):
         # Continuamos el mismo tema
         _contexto_activo.append(turno)
     else:
-        # Nuevo tema → reiniciar contexto activo
+        # Nuevo tema -> reiniciar contexto activo
         _contexto_activo.clear()
         _contexto_activo.append(turno)
 

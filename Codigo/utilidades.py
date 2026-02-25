@@ -97,8 +97,6 @@ def resumir_pdf(texto,  resumen_pipeline , max_length=60, min_length=30):
 
 def reproducir_voz(texto, tts_pipeline):
 
-    
-
     audio = tts_pipeline(texto)
     raw = audio["audio"]
     sr = audio["sampling_rate"]

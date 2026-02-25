@@ -4,8 +4,6 @@
 #preparado para el modelo de embeddings
 #=============================================================
 
-
-
 import fitz
 import re
 
